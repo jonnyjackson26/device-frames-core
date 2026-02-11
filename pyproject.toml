@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "device-frames-core"
-version = "0.1.0"
+version = "0.1.1"
 description = "Core library for applying device frames to screenshots."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -13,7 +13,7 @@ authors = [
   {name = "Jonny Jackson"}
 ]
 classifiers = [
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.9",
@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jonnyjackson26/device-frames-core"
+Homepage = "https://jonny-jackson.com/posts/device-frames/"
 Repository = "https://github.com/jonnyjackson26/device-frames-core"
 
 [tool.setuptools]

@@ -7,6 +7,7 @@ Local Test (Build + Verify)
 1. Create and activate a virtualenv:
 
 ```bash
+rm -rf dist
 python -m venv .venv
 source .venv/bin/activate
 ```
@@ -43,6 +44,13 @@ PY
 Publish to PyPI (Recommended Flow: TestPyPI first)
 --------------------------------------------------
 
+0. Remove dist and activate a virtualenv:
+
+```bash
+rm -rf dist
+source .venv/bin/activate
+```
+
 1. Build fresh artifacts:
 
 ```bash
@@ -55,6 +63,7 @@ python -m twine check dist/*
 ```bash
 python -m twine upload --repository testpypi dist/*
 ```
+Put in your api token
 
 ```bash
 python -m venv .venv-testpypi
@@ -158,3 +167,7 @@ Tip: For local development in your API/CLI repos, install in editable mode:
 ```bash
 pip install -e /path/to/device-frames-core
 ```
+
+
+**IN THE FUTURE:**
+adopt a tool like setuptools-scm or hatch if you want automatic versioning from git tags.
