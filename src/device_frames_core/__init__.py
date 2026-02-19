@@ -1,13 +1,13 @@
-from .core import apply_frame, find_template, list_devices, list_frame_sizes, DeviceInfo
+from .core import apply_frame, find_template, get_frame_image, get_mask_image, list_devices
 from .errors import DeviceFramesError, TemplateAmbiguousError, TemplateNotFoundError
 
 __all__ = [
-    "DeviceInfo",
     "DeviceFramesError",
     "TemplateAmbiguousError",
     "TemplateNotFoundError",
     "apply_frame",
     "find_template",
+    "get_frame_image",
+    "get_mask_image",
     "list_devices",
-    "list_frame_sizes",
 ]
