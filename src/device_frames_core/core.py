@@ -116,11 +116,13 @@ def find_template(
     variation: str,
     *,
     category: Optional[str] = None,
-) -> Path:
-    """Resolve a template.json path for the given device and variation."""
+) -> dict:
+    """Load and return the template data for the given device and variation."""
 
     with as_file(_assets_root()) as assets_root:
-        return _find_template_path(assets_root, device, variation, category)
+        template_path = _find_template_path(assets_root, device, variation, category)
+        with open(template_path, "r", encoding="utf-8") as handle:
+            return json.load(handle)
 
 
 def apply_frame(

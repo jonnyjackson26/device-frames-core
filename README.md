@@ -1,8 +1,7 @@
 device-frames-core
 ==================
 
-Core library for applying device frames to screenshots. This package is meant to be
-imported by your CLI and API services.
+Core library for applying device frames to screenshots.
 
 Install
 -------
@@ -37,7 +36,7 @@ API
 - `list_devices(category=None)` returns a list of `DeviceInfo` entries.
 - `list_frame_sizes(category=None)` returns a list of dicts with `frame_size` and `screen`.
 - `apply_frame(...)` applies a frame using bundled assets and writes an output image.
-- `find_template(device, variation, category=None)` returns the `template.json` path.
+- `find_template(device, variation, category=None)` returns the template data as a dict.
 
 Notes
 -----

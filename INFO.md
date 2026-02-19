@@ -1,7 +1,7 @@
-INFO
+DEPLOYMENT INSTRUCTIONS
 ====
 
-Local Test (Build + Verify)
+Local Test 
 ---------------------------
 
 1. Create and activate a virtualenv:
@@ -65,71 +65,22 @@ python -m twine upload --repository testpypi dist/*
 ```
 Put in your api token
 
+3. Test
 ```bash
 python -m venv .venv-testpypi
 source .venv-testpypi/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ device-frames-core
-python - <<'PY'
-from device_frames_core import list_devices
-print(len(list_devices()))
-PY
+python test.py
 ```
 
-3. Upload to PyPI:
+4. Upload to PyPI:
 
 ```bash
 python -m twine upload dist/*
 ```
 
-Upload Methods and Pros/Cons
-----------------------------
 
-Option A: API Token + Twine (most direct)
-Pros:
-- Simple, works locally, no CI required
-- Easy to test with TestPyPI and then PyPI
-Cons:
-- You must store/manage a long-lived token
-- Risk of accidentally leaking credentials if shell history is shared
-
-How:
-```bash
-export TWINE_USERNAME=__token__
-export TWINE_PASSWORD=pypi-REPLACE_WITH_YOUR_TOKEN
-python -m twine upload --repository testpypi dist/*
-python -m twine upload dist/*
-```
-
-Option B: Keyring + Twine (safer local auth)
-Pros:
-- Avoids plaintext env vars
-- Still local and straightforward
-Cons:
-- Extra setup (keyring backend)
-- Can be tricky in containers
-
-How:
-```bash
-python -m pip install keyring
-python -m twine upload --repository testpypi dist/*
-python -m twine upload dist/*
-```
-
-Option C: Trusted Publishing via GitHub Actions (recommended long-term)
-Pros:
-- No API tokens to manage (uses OIDC)
-- Auditable releases in CI
-- Scales well for future releases
-Cons:
-- Initial setup in PyPI and GitHub
-- Requires CI workflow
-
-How (high level):
-- In PyPI/TestPyPI, add a "Trusted Publisher" for this GitHub repo.
-- Create a GitHub Actions workflow that runs `python -m build` and then uses `pypa/gh-action-pypi-publish`.
-
-If you've already linked GitHub to PyPI, Option C is typically the most secure. For an immediate release, Option A is fastest.
 
 Usage in Your API/CLI
 ---------------------
@@ -171,3 +122,18 @@ pip install -e /path/to/device-frames-core
 
 **IN THE FUTURE:**
 adopt a tool like setuptools-scm or hatch if you want automatic versioning from git tags.
+
+Option C: Trusted Publishing via GitHub Actions (recommended long-term)
+Pros:
+- No API tokens to manage (uses OIDC)
+- Auditable releases in CI
+- Scales well for future releases
+Cons:
+- Initial setup in PyPI and GitHub
+- Requires CI workflow
+
+How (high level):
+- In PyPI/TestPyPI, add a "Trusted Publisher" for this GitHub repo.
+- Create a GitHub Actions workflow that runs `python -m build` and then uses `pypa/gh-action-pypi-publish`.
+
+If you've already linked GitHub to PyPI, Option C is typically the most secure. For an immediate release, Option A is fastest.
