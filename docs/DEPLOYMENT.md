@@ -41,8 +41,10 @@ print(len(list_devices()))
 PY
 ```
 
-Publish to PyPI (Recommended Flow: TestPyPI first)
+Publish to TestPyPI 
 --------------------------------------------------
+
+00. bump version number in pyproject.toml
 
 0. Remove dist and activate a virtualenv:
 
@@ -78,45 +80,6 @@ python test.py
 
 ```bash
 python -m twine upload dist/*
-```
-
-
-
-Usage in Your API/CLI
----------------------
-
-Install:
-
-```bash
-pip install device-frames-core
-```
-
-Example usage:
-
-```python
-from pathlib import Path
-from device_frames_core import apply_frame, list_devices, list_frame_sizes
-
-# List devices
-all_devices = list_devices()
-
-# Optionally inspect sizes
-sizes = list_frame_sizes(category="iOS")
-
-# Apply a frame
-apply_frame(
-    screenshot_path=Path("input.png"),
-    device="16 Pro Max",
-    variation="Black Titanium",
-    output_path=Path("output/framed.png"),
-    category="iOS",
-)
-```
-
-Tip: For local development in your API/CLI repos, install in editable mode:
-
-```bash
-pip install -e /path/to/device-frames-core
 ```
 
 
