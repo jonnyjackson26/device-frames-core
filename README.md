@@ -3,6 +3,8 @@ device-frames-core
 
 Core library for applying device frames to screenshots.
 
+todo: ci/cd for pypi
+
 Install
 -------
 
@@ -19,15 +21,15 @@ from pathlib import Path
 from device_frames_core import apply_frame, list_devices
 
 # List all iOS device variations
-devices = list_devices(category="iOS")
+devices = list_devices(category="ios")
 print(f"Found {len(devices)} iOS device variations")
 
 apply_frame(
     screenshot_path=Path("input.png"),
-    device="16 Pro Max",
-    variation="Black Titanium",
+    device="16-pro-max",
+    variation="black-titanium",
     output_path=Path("output/framed.png"),
-    category="iOS",
+    category="ios",
 )
 ```
 
@@ -43,8 +45,9 @@ API
 Notes
 -----
 
-- Assets are bundled in the package under `device_frames_core/assets`.
+- Device frames and masks are fetched from the remote repository at runtime.
 - The package depends on Pillow.
+- Device and variation names use lowercase kebab-case (e.g., "16-pro-max", "black-titanium").
 
 
 
@@ -64,21 +67,18 @@ Example usage:
 
 ```python
 from pathlib import Path
-from device_frames_core import apply_frame, list_devices, list_frame_sizes
+from device_frames_core import apply_frame, list_devices
 
 # List devices
 all_devices = list_devices()
 
-# Optionally inspect sizes
-sizes = list_frame_sizes(category="iOS")
-
 # Apply a frame
 apply_frame(
     screenshot_path=Path("input.png"),
-    device="16 Pro Max",
-    variation="Black Titanium",
+    device="16-pro-max",
+    variation="black-titanium",
     output_path=Path("output/framed.png"),
-    category="iOS",
+    category="ios",
 )
 ```
 

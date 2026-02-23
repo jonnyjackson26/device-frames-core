@@ -1,17 +1,32 @@
 from __future__ import annotations
 
 import json
-from importlib.resources import as_file, files
+from io import BytesIO
 from pathlib import Path
 from typing import Optional, Tuple
+from urllib.request import urlopen
 
 from PIL import Image, ImageFilter
 
 from .errors import TemplateAmbiguousError, TemplateNotFoundError
 
 
-def _assets_root() -> Path:
-    return Path(files("device_frames_core").joinpath("assets"))
+# URL to the device frames index JSON
+DEVICE_FRAMES_INDEX_URL = "https://raw.githubusercontent.com/jonnyjackson26/device-frames-media/main/device-frames-output/index.json"
+
+# Cache for the device frames index
+_device_frames_cache: Optional[dict] = None
+
+
+def _get_device_frames_index() -> dict:
+    """Fetch and cache the device frames index from the remote URL."""
+    global _device_frames_cache
+    
+    if _device_frames_cache is None:
+        with urlopen(DEVICE_FRAMES_INDEX_URL) as response:
+            _device_frames_cache = json.loads(response.read().decode('utf-8'))
+    
+    return _device_frames_cache
 
 
 def list_devices(
@@ -26,58 +41,53 @@ def list_devices(
     if device and not category:
         raise ValueError("category must be specified when device is specified")
 
-    with as_file(_assets_root()) as assets_root:
-        templates = sorted(assets_root.rglob("template.json"))
-
-        devices = []
-        for template_path in templates:
-            relative = template_path.parent.relative_to(assets_root)
-            parts = relative.parts
-            if len(parts) < 3:
-                continue
-
-            category_name = parts[0]
-            device_name = parts[-2]
-            variation_name = parts[-1]
-
-            if category and category_name != category:
-                continue
+    index = _get_device_frames_index()
+    devices = []
+    
+    for category_name, category_devices in index.items():
+        if category and category_name != category:
+            continue
+            
+        for device_name, device_variations in category_devices.items():
             if device and device_name != device:
                 continue
-
-            with open(template_path, "r", encoding="utf-8") as handle:
-                template = json.load(handle)
-
-            devices.append(
-                {
+                
+            for variation_name, variation_data in device_variations.items():
+                devices.append({
                     "category": category_name,
                     "device": device_name,
                     "variation": variation_name,
-                    "frame_size": template.get("frameSize", {}),
-                    "screen": template.get("screen", {}),
-                }
-            )
+                    "frame_size": variation_data.get("frameSize", {}),
+                    "screen": variation_data.get("screen", {}),
+                })
+    
+    return devices
 
-        return devices
 
-
-def _find_template_path(
-    assets_root: Path,
+def _find_template_data(
     device: str,
     variation: str,
     category: Optional[str],
-) -> Path:
-    pattern = f"{device}/{variation}/template.json"
-    matches = list(assets_root.rglob(pattern))
-
-    if category:
-        matches = [
-            match for match in matches
-            if match.parent.parent.name == device
-            and match.parent.name == variation
-            and match.parent.parent.parent.name == category
-        ]
-
+) -> dict:
+    """Find and return the template data for the given device and variation."""
+    index = _get_device_frames_index()
+    
+    matches = []
+    
+    for category_name, category_devices in index.items():
+        if category and category_name != category:
+            continue
+            
+        for device_name, device_variations in category_devices.items():
+            if device_name != device:
+                continue
+                
+            if variation in device_variations:
+                matches.append({
+                    "category": category_name,
+                    "data": device_variations[variation]
+                })
+    
     if not matches:
         raise TemplateNotFoundError(
             f"No template found for device='{device}', variation='{variation}', category='{category}'."
@@ -88,7 +98,7 @@ def _find_template_path(
             "Multiple templates matched. Specify a category to disambiguate."
         )
 
-    return matches[0]
+    return matches[0]["data"]
 
 
 def find_template(
@@ -98,11 +108,14 @@ def find_template(
     category: Optional[str] = None,
 ) -> dict:
     """Load and return the template data for the given device and variation."""
+    return _find_template_data(device, variation, category)
 
-    with as_file(_assets_root()) as assets_root:
-        template_path = _find_template_path(assets_root, device, variation, category)
-        with open(template_path, "r", encoding="utf-8") as handle:
-            return json.load(handle)
+
+def _download_image(url: str) -> Image.Image:
+    """Download an image from a URL and return it as a PIL Image."""
+    with urlopen(url) as response:
+        image_data = response.read()
+        return Image.open(BytesIO(image_data))
 
 
 def get_frame_image(
@@ -112,14 +125,8 @@ def get_frame_image(
     category: Optional[str] = None,
 ) -> Image.Image:
     """Load and return the frame image for the given device and variation."""
-
-    with as_file(_assets_root()) as assets_root:
-        template_path = _find_template_path(assets_root, device, variation, category)
-        with open(template_path, "r", encoding="utf-8") as handle:
-            template = json.load(handle)
-
-        frame_dir = template_path.parent
-        return Image.open(frame_dir / template["frame"])
+    template_data = _find_template_data(device, variation, category)
+    return _download_image(template_data["frame"])
 
 
 def get_mask_image(
@@ -129,14 +136,8 @@ def get_mask_image(
     category: Optional[str] = None,
 ) -> Image.Image:
     """Load and return the mask image for the given device and variation."""
-
-    with as_file(_assets_root()) as assets_root:
-        template_path = _find_template_path(assets_root, device, variation, category)
-        with open(template_path, "r", encoding="utf-8") as handle:
-            template = json.load(handle)
-
-        frame_dir = template_path.parent
-        return Image.open(frame_dir / template["mask"])
+    template_data = _find_template_data(device, variation, category)
+    return _download_image(template_data["mask"])
 
 
 def apply_frame(
@@ -149,18 +150,13 @@ def apply_frame(
     background_color: Tuple[int, int, int, int] | Tuple[int, int, int] = (0, 0, 0, 0),
 ) -> Path:
     """Apply a device frame to a screenshot and save the output image."""
-
-    with as_file(_assets_root()) as assets_root:
-        template_path = _find_template_path(assets_root, device, variation, category)
-
-        with open(template_path, "r", encoding="utf-8") as handle:
-            template = json.load(handle)
-
-        frame_dir = template_path.parent
-
-        frame = Image.open(frame_dir / template["frame"])
-        mask = Image.open(frame_dir / template["mask"])
-        screenshot = Image.open(screenshot_path)
+    
+    template = _find_template_data(device, variation, category)
+    
+    # Download frame and mask images
+    frame = _download_image(template["frame"])
+    mask = _download_image(template["mask"])
+    screenshot = Image.open(screenshot_path)
 
     screen = template["screen"]
 
