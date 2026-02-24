@@ -2,7 +2,9 @@
 
 Python core library for applying device frames to screenshots and retrieving up-to-date media of device frame PNGs (with metadata)
 
-# [View on PyPi](https://pypi.org/project/device-frames-core/)
+![apply_frame function example](docs/example.png)
+
+## [View on PyPi](https://pypi.org/project/device-frames-core/)
 
 
 ### Usage Example
