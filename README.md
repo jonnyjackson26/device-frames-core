@@ -1,69 +1,15 @@
-device-frames-core
-==================
+# device-frames-core
 
-Core library for applying device frames to screenshots.
+Python core library for applying device frames to screenshots and retrieving up-to-date media of device frame PNGs (with metadata)
 
-todo: ci/cd for pypi
-
-Install
--------
-
-```bash
-pip install device-frames-core
-```
-
-Quick Start
------------
-
-```python
-from pathlib import Path
-
-from device_frames_core import apply_frame, list_devices
-
-# List all iOS device variations
-devices = list_devices(category="ios")
-print(f"Found {len(devices)} iOS device variations")
-
-apply_frame(
-    screenshot_path=Path("input.png"),
-    device="16-pro-max",
-    variation="black-titanium",
-    output_path=Path("output/framed.png"),
-    category="ios",
-)
-```
-
-API
----
-
-- `list_devices(category=None, device=None)` returns a list of available devices and variations, optionally filtered.
-- `apply_frame(...)` applies a frame using bundled assets and writes an output image.
-- `find_template(device, variation, category=None)` returns the template data as a dict.
-- `get_frame_image(device, variation, category=None)` returns the frame image as a PIL Image.
-- `get_mask_image(device, variation, category=None)` returns the mask image as a PIL Image.
-
-Notes
------
-
-- Device frames and masks are fetched from the remote repository at runtime.
-- The package depends on Pillow.
-- Device and variation names use lowercase kebab-case (e.g., "16-pro-max", "black-titanium").
+# [View on PyPi](https://pypi.org/project/device-frames-core/)
 
 
-
-
-
-
-Usage in Your API/CLI
----------------------
-
-Install:
+### Usage Example
 
 ```bash
 pip install device-frames-core
 ```
-
-Example usage:
 
 ```python
 from pathlib import Path
@@ -82,8 +28,68 @@ apply_frame(
 )
 ```
 
-Tip: For local development in your API/CLI repos, install in editable mode:
+Notes
+-----
 
+- Device frames and masks are fetched at runtime from https://github.com/jonnyjackson26/device-frames-media. This ensures you always have updated data. If you need a frame that's not listed there, please [add it](https://github.com/jonnyjackson26/device-frames-media?tab=contributing-ov-file)
+- The package depends on Pillow.
+- Device and variation names use lowercase kebab-case (e.g., "16-pro-max", "black-titanium").
+
+
+
+
+
+
+
+## Create and activate a virtualenv:
 ```bash
-pip install -e /path/to/device-frames-core
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### Local Testing with tests/test.py:
+With virtual enviroment enabled:
+```bash
+python -m pip install -e .   (pip install in editable mode)
+python tests/test.py         (run test file)
+```
+
+
+### Local package testing
+```bash
+rm -rf dist
+python -m pip install --upgrade pip
+python -m pip install build twine
+python -m build                          #build dist + wheel
+python -m twine check dist/*             #Check distribution metadata
+```
+Install the wheel locally and do a quick import check:
+```bash
+python -m pip install dist/*.whl
+python - <<'PY'
+from device_frames_core import list_devices
+print(len(list_devices()))
+PY
+```
+
+
+### Publish to TestPyPI/PyPI 
+1. Bump version number in pyproject.toml
+2. Remove dist and activate a virtualenv:
+```bash
+rm -rf dist
+source .venv/bin/activate
+```
+3. Build fresh artifacts:
+```bash
+python -m build
+python -m twine check dist/*
+```
+4. (Optional) Upload to TestPyPI and verify install:
+```bash
+python -m twine upload --repository testpypi dist/*   #you'll need to put in your api token
+```
+5. Upload to PyPI:
+```bash
+python -m twine upload dist/*                         #you'll need to put in your api token
 ```
