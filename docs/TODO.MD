@@ -1,5 +1,7 @@
 ci/cd for pypi
 
+fix image in pypi docs
+
 
 **IN THE FUTURE:**
 adopt a tool like setuptools-scm or hatch if you want automatic versioning from git tags.

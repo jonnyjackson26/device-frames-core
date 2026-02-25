@@ -9,18 +9,6 @@ This project publishes to PyPI using a GitHub Actions trusted publisher (OIDC), 
 - Optional trigger: manual run (`workflow_dispatch`)
 - Publish job environment: `pypi`
 
-## One-time setup checklist
-
-1. **PyPI trusted publisher is configured** for:
-   - Owner/repo: `jonnyjackson26/device-frames-core`
-   - Workflow file: `updatePyPi.yml`
-   - Environment name: `pypi` (recommended)
-2. **GitHub Environment exists** (recommended):
-   - In repo settings, create environment `pypi`
-   - Optional: add required reviewers for a manual approval gate before publish
-3. **Repository permissions are enabled** (default for public repos):
-   - GitHub Actions allowed to run
-   - OIDC token requests allowed (handled by `id-token: write` in workflow)
 
 ## How to make a GitHub Release (recommended publish path)
 
@@ -54,6 +42,4 @@ This project publishes to PyPI using a GitHub Actions trusted publisher (OIDC), 
   - `python -m build`
   - `python -m twine check dist/*`
 
-## Is any more action required?
 
-Only one likely follow-up: in PyPI trusted publisher settings, set the environment to `pypi` (instead of `Any`) to match the workflow and tighten security. If you keep it as `Any`, publishing still works.
