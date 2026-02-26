@@ -1,4 +1,3 @@
-
 ### device-frames-core
 Python core library for applying device frames to screenshots and retrieving up-to-date media of device frame PNGs (with metadata)
 
@@ -24,3 +23,7 @@ apply_frame(
     category="ios",
 )
 ```
+---
+[Read more about this project on my website](https://jonny-jackson.com/posts/device-frames/)  
+[Github repo](https://github.com/jonnyjackson26/device-frames-core)  
+[device-frames-media Github repo](https://github.com/jonnyjackson26/device-frames-media)  

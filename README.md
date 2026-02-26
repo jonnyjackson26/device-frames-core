@@ -81,3 +81,9 @@ This project publishes to PyPI using GitHub Actions via the [`.github/workflows/
    - Add release notes
    - Click **Publish release**
 5. GitHub Actions runs `Publish to PyPI` and uploads `dist/*` to PyPI.
+
+---
+[Read more about this project on my website](https://jonny-jackson.com/posts/device-frames/)  
+[PyPI](https://pypi.org/project/device-frames-core/)  
+[TestPyPI](https://test.pypi.org/project/device-frames-core/)  
+[device-frames-media Github repo](https://github.com/jonnyjackson26/device-frames-media)  
