@@ -1,11 +1,8 @@
-# device-frames-core
+# device-frames-core [View on PyPi](https://pypi.org/project/device-frames-core/)
 
 Python core library for applying device frames to screenshots and retrieving up-to-date media of device frame PNGs (with metadata)
 
 ![apply_frame function example](docs/example.png)
-
-## [View on PyPi](https://pypi.org/project/device-frames-core/)
-
 
 ### Usage Example
 
@@ -39,10 +36,6 @@ Notes
 
 
 
-
-
-
-
 ## Create and activate a virtualenv:
 ```bash
 python -m venv .venv
@@ -55,7 +48,6 @@ With virtual enviroment enabled:
 python -m pip install -e .   (pip install in editable mode)
 python tests/test.py         (run test file)
 ```
-
 
 ### Local package testing
 ```bash
@@ -74,24 +66,18 @@ print(len(list_devices()))
 PY
 ```
 
+### Publish to PyPI 
+This project publishes to PyPI using GitHub Actions via the [`.github/workflows/updatePyPi.yml`](../.github/workflows/updatePyPi.yml) workflow, triggered when a GitHub Release is published (`release.published`).
 
-### Publish to TestPyPI/PyPI 
-1. Bump version number in pyproject.toml
-2. Remove dist and activate a virtualenv:
-```bash
-rm -rf dist
-source .venv/bin/activate
-```
-3. Build fresh artifacts:
-```bash
-python -m build
-python -m twine check dist/*
-```
-4. (Optional) Upload to TestPyPI and verify install:
-```bash
-python -m twine upload --repository testpypi dist/*   #you'll need to put in your api token
-```
-5. Upload to PyPI:
-```bash
-python -m twine upload dist/*                         #you'll need to put in your api token
-```
+1. Update version in `pyproject.toml`.
+2. Commit and push to `main`.
+3. Create and push a matching git tag:
+   - `git tag v0.1.4`
+   - `git push origin v0.1.4`
+4. In GitHub:
+   - Open **Releases** → **Draft a new release**
+   - Choose tag `v0.1.4`
+   - Set release title (for example, `v0.1.4`)
+   - Add release notes
+   - Click **Publish release**
+5. GitHub Actions runs `Publish to PyPI` and uploads `dist/*` to PyPI.
